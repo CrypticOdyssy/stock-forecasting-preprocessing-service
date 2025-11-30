@@ -1,23 +1,39 @@
 # Data Preprocessing Service
 
-Implementation for time series data preprocessing.
+This service is part of a larger distributed system for collecting, analyzing, and forecasting time series data. Its primary responsibility is **preprocessing time series datasets** before they are used by downstream services like forecasting, anomaly detection, or analysis.
+
+## Responsibilities
+
+The preprocessing service handles:
+
+- Outlier detection and removal
+- Resampling and aggregation of time series
+- Feature engineering (lag features, rolling statistics)
+
+It serves as a key step to ensure high-quality, clean, and well-structured data for the rest of the system.
 
 ## Architecture
 
-This service follows hexagonal architecture:
+This service follows **hexagonal architecture**:
 
-- **Domain Layer**: Pure business logic
-- **Ports**: Interfaces defining contracts
-- **Adapters**: Implementations using specific technologies
-- **API Layer**: FastAPI REST endpoints
+- **Domain Layer**: Pure business logic for preprocessing operations
+- **Ports**: Interfaces defining contracts for adapters
+- **Adapters**: Technology-specific implementations (e.g., Pandas, database connectors)
+- **API Layer**: FastAPI REST endpoints to receive datasets and provide processed results
 
 ## Project Structure
-```
+
 preprocessing-service/
 ├── src/
-│   ├── domain/          # Core business logic
-│   ├── adapters/        # Infrastructure implementations
-│   └── api/             # REST API
-├── tests/               # Unit tests
-├── Dockerfile 
+│ ├── domain/ # Core preprocessing logic
+│ ├── adapters/ # Infrastructure implementations
+│ └── api/ # REST API endpoints
+├── tests/ # Unit tests
+├── Dockerfile
 └── requirements.txt
+
+## Technology Stack
+
+- **Python** + Pandas for preprocessing
+- **FastAPI** for REST endpoints
+- Dockerized for deployment
