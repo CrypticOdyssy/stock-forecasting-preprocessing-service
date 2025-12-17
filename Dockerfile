@@ -22,5 +22,4 @@ RUN chmod +x /usr/local/bin/wait-for-db
 EXPOSE 8000
 
 # Default CMD waits for DB host:port args; when run locally via docker-compose the service names are used
-
 CMD ["python3.11", "-m", "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "info", "--access-log"]
