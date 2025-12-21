@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# System deps for psycopg2 (if you use psycopg2) and netcat for wait-for-db
+# System deps and netcat for wait-for-db
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq-dev \
@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 
 COPY requirements.txt .
-# Make sure pip uses the python you want
+
 RUN python3.11 -m pip install --no-cache-dir --upgrade pip \
     && python3.11 -m pip install --no-cache-dir -r requirements.txt
 
