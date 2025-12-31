@@ -11,6 +11,8 @@ from src.domain.models import (
     AggregationMethod
 )
 from src.domain.ports import IEventPublisher
+from shared import SimpleJobTracker
+
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +48,14 @@ class IngestionEventHandler:
             if not series_id or not job_id:
                 raise ValueError("Missing required fields: series_id or job_id")
             
+            # Mark preprocessing as started
+            SimpleJobTracker.update_status(
+                job_id=job_id,
+                series_id=series_id,
+                status='running',
+                stage='preprocessing'
+            )
+            
             # Build preprocessing configuration
             config = self._build_config(config_data)
             
@@ -54,6 +64,18 @@ class IngestionEventHandler:
             
             # Create features
             features_df = self.preprocessing_service.create_features(series_id, config)
+
+            #  Mark preprocessing as completed
+            SimpleJobTracker.update_status(
+                job_id=job_id,
+                series_id=series_id,
+                status='completed',
+                stage='preprocessing',
+                metadata={
+                    'data_points': len(result),
+                    'features_created': result.features
+                }
+            )
             
             # Publish success event
             await self.event_publisher.publish_preprocessing_completed(
@@ -71,6 +93,14 @@ class IngestionEventHandler:
             
             # Publish failure event
             if series_id and job_id:
+                # Mark preprocessing as failed
+                SimpleJobTracker.update_status(
+                    job_id=job_id,
+                    series_id=series_id,
+                    status='failed',
+                    stage='preprocessing',
+                    error_message=str(e)
+                )
                 await self.event_publisher.publish_processing_failed(
                     series_id=series_id,
                     job_id=job_id,
