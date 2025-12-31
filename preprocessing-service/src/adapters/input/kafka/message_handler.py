@@ -72,8 +72,7 @@ class IngestionEventHandler:
                 status='completed',
                 stage='preprocessing',
                 metadata={
-                    'data_points': len(result),
-                    'features_created': result.features
+                    'data_points': len(result)
                 }
             )
             
