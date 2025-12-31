@@ -9,7 +9,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
 from typing import Optional
-from src.domain.ports import ITimeSeriesRepository
+from src.domain.ports import ITimeSeriesRepository, ILogger
 from src.domain.models import TimeSeriesData
 
 
@@ -19,12 +19,13 @@ class TimescaleDBRepository(ITimeSeriesRepository):
     Supports OHLCV (Open, High, Low, Close, Volume) data format.
     """
 
-    def __init__(self, connection_string: str):
+    def __init__(self, connection_string: str, logger:ILogger):
         """
         Example connection string:
         postgresql+psycopg2://user:password@timescaledb:5432/timeseries
         """
         self.engine = create_engine(connection_string, pool_pre_ping=True)
+        self.logger = logger
 
         # Ensure hypertables exist (idempotent)
         self._initialize_schema()
@@ -94,6 +95,12 @@ class TimescaleDBRepository(ITimeSeriesRepository):
             df = pd.read_sql(query, conn, params={"sid": series_id})
 
         if df.empty:
+            self.logger.info(f"Query returned {len(df)} rows for series_id: '{series_id}'")
+            # Check what series_ids actually exist
+            with self.engine.connect() as conn:
+                existing = pd.read_sql(text("SELECT DISTINCT series_id FROM time_series_raw LIMIT 10"), conn)
+                self.logger.info(f"DEBUG: Query returned {len(df)} rows for series_id: '{series_id}'", flush=True)
+                self.logger.info(f"No data found. Available series_ids: {existing['series_id'].tolist()}")
             raise ValueError(f"No raw data found for {series_id}")
 
         # Parse JSONB features if they're strings

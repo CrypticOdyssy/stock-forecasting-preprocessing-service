@@ -59,11 +59,27 @@ class FeatureResponse(BaseModel):
     rows: int
 
 
+class OHLCVStats(BaseModel):
+    missing_count: int
+    missing_percentage: float
+    mean: float
+    std: float
+    min: float
+    max: float
+
+class DataQualityChecks(BaseModel):
+    high_ge_low: int
+    high_ge_open: int
+    high_ge_close: int
+    low_le_open: int
+    low_le_close: int
+    volume_positive: int
+
 class ValidationResponse(BaseModel):
     """Response schema for validation endpoint"""
     total_points: int
-    missing_values: int
-    missing_percentage: float
     date_range: Dict[str, str]
-    value_stats: Dict[str, float]
+    ohlcv_stats: Dict[str, OHLCVStats]
+    data_quality_checks: DataQualityChecks
+
 

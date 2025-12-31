@@ -319,7 +319,9 @@ class PreprocessingService:
             Dictionary with validation metrics
         """
         try:
+            self.logger.info("Validating data now")
             data = self.repository.get_raw_data(series_id)
+            self.logger.info("Got raw data")
             df = data.to_dataframe()
             
             # Calculate statistics for each OHLCV column
@@ -350,9 +352,12 @@ class PreprocessingService:
                     'volume_positive': int((df['volume'] > 0).sum())
                 }
             }
+
+            self.logger.info("Succesfully validated")
             
             return validation
             
         except Exception as e:
+            self.logger.info(e)
             self.logger.error(f"Validation failed for {series_id}", e)
             raise
