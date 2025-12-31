@@ -24,12 +24,13 @@ def get_preprocessing_service() -> PreprocessingService:
     )
     
     # Initialize adapters
-    repository = TimescaleDBRepository(db_connection)
+    logger = PythonLogger("preprocessing-api")
+    repository = TimescaleDBRepository(db_connection, logger)
     missing_handler = MissingValueHandler()
     outlier_detector = StatisticalOutlierDetector()
     feature_engineer = FeatureEngineer()
     resampler = Resampler()
-    logger = PythonLogger("preprocessing-api")
+    
     
     # Create and return service
     return PreprocessingService(

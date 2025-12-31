@@ -19,7 +19,7 @@ class PythonLogger(ILogger):
             handler = logging.StreamHandler()
             handler.setLevel(logging.INFO)
             formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+                '%(levelname)s:  %(name)s : - %(message)s'
             )
             handler.setFormatter(formatter)
             self.logger.addHandler(handler)

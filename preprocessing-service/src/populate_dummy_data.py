@@ -78,7 +78,7 @@ series_configs = [
 ]
 
 start_date = datetime(2024, 1, 1)
-num_days = 100
+num_days = 500
 
 # Generate timestamps
 timestamps = [start_date + timedelta(days=i) for i in range(num_days)]
